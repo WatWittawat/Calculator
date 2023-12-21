@@ -1,7 +1,7 @@
 import { useReducer } from "react";
 import DigitButton from "./components/DigitButton";
 import "./App.css";
-import { ACTION } from "./components/lib/data";
+import { ACTION } from "./lib/data";
 
 type PropsState = {
   CurOperand: string;

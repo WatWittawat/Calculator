@@ -1,4 +1,4 @@
-import { ACTION } from "./lib/data";
+import { ACTION } from "../lib/data";
 
 type Pay_type = {
   type: string;
