@@ -4,24 +4,27 @@ import { useACTIONname } from "../lib/type";
 type Pay_type = {
   type: useACTIONname;
   payload: {
-    digit: string;
+    Operation: string;
   };
 };
 
 type DigitButtonProps = {
   dispatch: React.Dispatch<Pay_type>;
-  digit: string;
+  Operation: string;
 };
-const DigitButton: React.FC<DigitButtonProps> = ({ dispatch, digit }) => {
+const OperationDigitButton: React.FC<DigitButtonProps> = ({
+  dispatch,
+  Operation,
+}) => {
   return (
     <button
       onClick={() => {
-        dispatch({ type: ACTION.ADD_DIGIT, payload: { digit } });
+        dispatch({ type: ACTION.CHOOSE_OPEARATION, payload: { Operation } });
       }}
     >
-      {digit}
+      {Operation}
     </button>
   );
 };
 
-export default DigitButton;
+export default OperationDigitButton;
