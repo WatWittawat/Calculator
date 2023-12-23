@@ -6,9 +6,10 @@ import OperationDigitButton from "./components/OperationDigitButton";
 import { useACTIONname } from "./lib/type";
 
 type PropsState = {
-  CurOperand: string;
+  CurOperand: string | undefined;
   PreOperand: string;
   Operation: string | undefined;
+  overwrite: boolean;
 };
 
 type Pay_type = {
@@ -22,10 +23,21 @@ type Pay_type = {
 function reducer(state: PropsState, { type, payload }: Pay_type) {
   switch (type) {
     case ACTION.ADD_DIGIT:
+      if (state.overwrite) {
+        return {
+          ...state,
+          CurOperand: payload.digit,
+          overwrite: false,
+        };
+      }
       if (payload.digit === "0" && state.CurOperand === "0") {
         return state;
       }
-      if (payload.digit === "." && state.CurOperand.includes(".")) {
+      if (
+        payload.digit === "." &&
+        state.CurOperand &&
+        state.CurOperand.includes(".")
+      ) {
         return state;
       }
       return {
@@ -58,7 +70,12 @@ function reducer(state: PropsState, { type, payload }: Pay_type) {
         CurOperand: "",
       };
     case ACTION.CLEAR:
-      return { CurOperand: "", PreOperand: "", Operation: "" };
+      return {
+        CurOperand: "",
+        PreOperand: "",
+        Operation: "",
+        overwrite: false,
+      };
     case ACTION.EVALUATE:
       if (!state.Operation || !state.CurOperand || !state.PreOperand) {
         return state;
@@ -66,14 +83,22 @@ function reducer(state: PropsState, { type, payload }: Pay_type) {
       return {
         ...state,
         Operation: undefined,
+        overwrite: true,
         PreOperand: "",
         CurOperand: evaluate(state),
       };
     case ACTION.DELETE_DIGIT:
+      if (state.overwrite) {
+        return {
+          ...state,
+          CurOperand: "",
+          overwrite: false,
+        };
+      }
       if (!state.Operation) {
         return state;
       }
-      if (state.CurOperand.length === 1) {
+      if (state.CurOperand && state.CurOperand.length === 1) {
         return {
           ...state,
           CurOperand: "",
@@ -81,7 +106,7 @@ function reducer(state: PropsState, { type, payload }: Pay_type) {
       }
       return {
         ...state,
-        CurOperand: state.CurOperand.slice(0, -1),
+        CurOperand: state.CurOperand ? state.CurOperand.slice(0, -1) : "",
       };
     default:
       return state;
@@ -90,7 +115,7 @@ function reducer(state: PropsState, { type, payload }: Pay_type) {
 
 const evaluate = ({ CurOperand, PreOperand, Operation }: PropsState) => {
   const prev = parseFloat(PreOperand);
-  const current = parseFloat(CurOperand);
+  const current = parseFloat(CurOperand ? CurOperand : "");
   if (isNaN(prev) || isNaN(current)) {
     return "";
   }
@@ -130,7 +155,7 @@ const forMatnumber = (operand: string): string | undefined => {
 function App() {
   const [{ CurOperand, PreOperand, Operation }, dispatch] = useReducer(
     reducer,
-    { CurOperand: "", PreOperand: "", Operation: "" }
+    { CurOperand: "", PreOperand: "", Operation: "", overwrite: false }
   );
   return (
     <div className="container">
@@ -138,7 +163,9 @@ function App() {
         <div className="PreOperand">
           {forMatnumber(PreOperand)} {Operation}
         </div>
-        <div className="CurOperand">{forMatnumber(CurOperand)}</div>
+        <div className="CurOperand">
+          {forMatnumber(CurOperand ? CurOperand : "")}
+        </div>
       </div>
       <button
         className="span-two"
