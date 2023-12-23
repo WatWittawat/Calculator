@@ -95,9 +95,6 @@ function reducer(state: PropsState, { type, payload }: Pay_type) {
           overwrite: false,
         };
       }
-      if (!state.Operation) {
-        return state;
-      }
       if (state.CurOperand && state.CurOperand.length === 1) {
         return {
           ...state,
